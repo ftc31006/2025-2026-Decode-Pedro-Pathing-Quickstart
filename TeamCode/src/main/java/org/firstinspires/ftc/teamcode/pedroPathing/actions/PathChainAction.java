@@ -4,7 +4,7 @@ import com.pedropathing.follower.Follower;
 import com.pedropathing.paths.PathChain;
 
 public class PathChainAction implements Action {
-    private PathChain pathChain;
+    private final PathChain pathChain;
 
     public PathChainAction(PathChain pathChain) {
         this.pathChain = pathChain;

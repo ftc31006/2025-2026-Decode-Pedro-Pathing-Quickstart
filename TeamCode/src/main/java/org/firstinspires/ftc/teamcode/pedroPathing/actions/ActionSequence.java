@@ -8,8 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ActionSequence {
-    private Follower follower;
-    private List<Action> actions;
+    private final Follower follower;
+    private final List<Action> actions;
     private int currentIndex = -1;
 
     public ActionSequence(Follower follower) {

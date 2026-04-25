@@ -4,8 +4,8 @@ import com.pedropathing.follower.Follower;
 import com.pedropathing.util.Timer;
 
 public class PauseAction implements Action {
-    private Timer timer;
-    private long milliseconds;
+    private final Timer timer;
+    private final long milliseconds;
 
     public PauseAction(long milliseconds) {
         this.milliseconds = milliseconds;
