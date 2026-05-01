@@ -18,16 +18,20 @@ public class ActionSequence {
 
         actions = new ArrayList<>();
         actions.add(new PathChainAction((paths.Path1)));
-        actions.add(new PauseAction(3000));
-        actions.add(new PathChainAction((paths.Path2)));
-        actions.add(new PauseAction(3000));
-        actions.add(new PathChainAction((paths.Path3)));
-        actions.add(new PauseAction(3000));
-        actions.add(new PathChainAction((paths.Path4)));
+//        actions.add(new PauseAction(1000));
+//        actions.add(new PathChainAction((paths.Path2)));
+//       actions.add(new PauseAction(1000));
+//       actions.add(new PathChainAction((paths.Path3)));
+//        actions.add(new PauseAction(3000));
+//        actions.add(new PathChainAction((paths.Path4)));
     }
 
     public void update() {
         follower.update();
+
+        if (currentIndex >= actions.size()) {
+            return;
+        }
 
         if (currentIndex < 0) {
             currentIndex = 0;

@@ -4,11 +4,8 @@ import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.pedropathing.util.Timer;
 
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
-import org.firstinspires.ftc.teamcode.pedroPathing.PathCollection;
-import org.firstinspires.ftc.teamcode.pedroPathing.Paths;
 import org.firstinspires.ftc.teamcode.pedroPathing.actions.ActionSequence;
 
 @Autonomous
@@ -46,7 +43,7 @@ public class SampleAutoPathing extends OpMode {
 
         follower = Constants.createFollower(hardwareMap);
 //        paths = new PathCollection(follower);
-        follower.setPose(new Pose(55.526, 8.474, Math.toRadians(90)));
+        follower.setPose(new Pose(47.446, 8.066, Math.toRadians(88)));
 
         actionSequence = new ActionSequence(follower);
     }
