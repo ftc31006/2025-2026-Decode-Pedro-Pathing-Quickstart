@@ -9,50 +9,31 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+
 public class Paths {
     public PathChain Path1;
     public PathChain Path2;
-    public PathChain Path3;
-    public PathChain Path4;
 
     public Paths(Follower follower) {
         Path1 = follower.pathBuilder().addPath(
                         new BezierLine(
                                 new Pose(56.000, 8.000),
 
-                                new Pose(96.567, 36.000)
+                                new Pose(57.186, 54.504)
                         )
-                ).setConstantHeadingInterpolation(Math.toRadians(90))
+                ).setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(180))
 
                 .build();
 
         Path2 = follower.pathBuilder().addPath(
                         new BezierLine(
-                                new Pose(96.567, 36.000),
+                                new Pose(57.186, 54.504),
 
-                                new Pose(62.209, 57.656)
-                        )
-                ).setConstantHeadingInterpolation(Math.toRadians(90))
-                .build();
-
-        Path3 = follower.pathBuilder().addPath(
-                        new BezierLine(
-                                new Pose(62.209, 57.656),
-
-                                new Pose(87.000, 15.000)
+                                new Pose(20.684, 53.781)
                         )
                 ).setTangentHeadingInterpolation()
 
                 .build();
-
-        Path4 = follower.pathBuilder().addPath(
-                        new BezierLine(
-                                new Pose(87.000, 15.000),
-
-                                new Pose(72.387, 71.850)
-                        )
-                ).setConstantHeadingInterpolation(Math.toRadians(90))
-
-                .build();
     }
 }
+

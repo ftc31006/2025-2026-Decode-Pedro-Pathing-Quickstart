@@ -15,8 +15,8 @@ public class PathCollection {
         AllPaths=new ArrayList<>();
         AllPaths.add(paths.Path1);
         AllPaths.add(paths.Path2);
-        AllPaths.add(paths.Path3);
-        AllPaths.add(paths.Path4);
+//        AllPaths.add(paths.Path3);
+//        AllPaths.add(paths.Path4);
 //        AllPaths.add(paths.Path5);
 //        AllPaths.add(paths.Path6);
 //        AllPaths.add(paths.Path7);
