@@ -14,12 +14,15 @@ public class PauseAction implements Action {
     }
 
     @Override
-    public boolean isComplete(Follower follower) {
+    public boolean isComplete() {
         return timer.getElapsedTime() > milliseconds;
     }
 
     @Override
-    public void start(Follower follower) {
+    public void start() {
         timer.resetTimer();
     }
+
+    @Override
+    public void update() { }
 }

@@ -6,7 +6,6 @@ import com.pedropathing.follower.Follower;
 import com.pedropathing.follower.FollowerConstants;
 import com.pedropathing.ftc.FollowerBuilder;
 import com.pedropathing.ftc.drivetrains.MecanumConstants;
-import com.pedropathing.ftc.localization.Encoder;
 import com.pedropathing.ftc.localization.constants.PinpointConstants;
 import com.pedropathing.paths.PathConstraints;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
@@ -38,10 +37,10 @@ public class Constants {
             .maxPower(1)
             .xVelocity(62.734641728438724)
             .yVelocity(54.101035771407474)
-            .rightFrontMotorName("FrontRight")
-            .rightRearMotorName("BackRight")
-            .leftRearMotorName("BackLeft")
-            .leftFrontMotorName("FrontLeft")
+            .rightFrontMotorName(org.firstinspires.ftc.teamcode.robot.Constants.Motors.FrontRightWheelMotor)
+            .rightRearMotorName(org.firstinspires.ftc.teamcode.robot.Constants.Motors.BackRightWheelMotor)
+            .leftRearMotorName(org.firstinspires.ftc.teamcode.robot.Constants.Motors.BackLeftWheelMotor)
+            .leftFrontMotorName(org.firstinspires.ftc.teamcode.robot.Constants.Motors.FrontLeftWheelMotor)
             .leftFrontMotorDirection(DcMotorSimple.Direction.REVERSE)
             .leftRearMotorDirection(DcMotorSimple.Direction.REVERSE)
             .rightFrontMotorDirection(DcMotorSimple.Direction.FORWARD)
