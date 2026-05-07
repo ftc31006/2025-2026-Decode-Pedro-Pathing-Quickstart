@@ -4,7 +4,7 @@ import org.firstinspires.ftc.teamcode.geometry.TargetLocator;
 import org.firstinspires.ftc.teamcode.pid.AprilTagAimingController;
 import org.firstinspires.ftc.teamcode.robot.Context;
 import org.firstinspires.ftc.teamcode.robot.DriveMotorPower;
-import org.firstinspires.ftc.teamcode.robot.LEDSequence;
+import org.firstinspires.ftc.teamcode.robot.sequencing.LEDSequence;
 import org.firstinspires.ftc.teamcode.robot.LEDState;
 import org.firstinspires.ftc.teamcode.robot.RampageRobot;
 import org.firstinspires.ftc.teamcode.telemetry.TelemetryWriter;
@@ -29,7 +29,7 @@ public class AprilTagTest extends RampageOpMode {
     }
 
     @Override
-    protected void processInput(Context context) {
+    protected void executingFrame(Context context) {
         RampageRobot robot = context.getRobot();
 
         if (gamepad1.dpadLeftWasPressed()) {

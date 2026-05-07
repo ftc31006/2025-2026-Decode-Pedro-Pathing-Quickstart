@@ -1,6 +1,10 @@
-package org.firstinspires.ftc.teamcode.robot;
+package org.firstinspires.ftc.teamcode.robot.sequencing;
 
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.teamcode.robot.Context;
+import org.firstinspires.ftc.teamcode.robot.LEDState;
+import org.firstinspires.ftc.teamcode.robot.RampageRobot;
 
 import java.util.Objects;
 
@@ -9,7 +13,7 @@ public class LEDSequence implements Sequence {
     public Integer frequency;
     private boolean hasNewValue = false;
     private boolean isOn = false;
-    private ElapsedTime timer = new ElapsedTime();
+    private final ElapsedTime timer = new ElapsedTime();
 
     public void setState(LEDState state, Integer frequency) {
         if (this.state == state && Objects.equals(this.frequency, frequency)) {
@@ -22,9 +26,12 @@ public class LEDSequence implements Sequence {
     }
 
     @Override
-    public boolean hasCompleted() {
+    public boolean hasCompleted(Context context) {
         return false;
     }
+
+    @Override
+    public void start(Context context) { }
 
     @Override
     public void executeFrame(Context context) {

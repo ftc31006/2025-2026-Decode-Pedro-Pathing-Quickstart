@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.robot;
 
+import com.pedropathing.follower.Follower;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -11,11 +12,13 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.robot.camera.AprilTagWebcam;
 import org.firstinspires.ftc.teamcode.robot.motors.FlywheelMotorController;
 import org.firstinspires.ftc.teamcode.robot.motors.FlywheelVelocitySettings;
+import org.firstinspires.ftc.teamcode.robot.sequencing.Sequence;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 import java.util.List;
 
 public class RampageRobot implements Sequence {
+    private final Follower follower;
     private final DcMotor frontLeftMotor;
     private final DcMotor frontRightMotor;
     private final DcMotor backLeftMotor;
@@ -35,6 +38,7 @@ public class RampageRobot implements Sequence {
     private final AprilTagWebcam webcam;
 
     public RampageRobot(OpMode opMode) {
+        this.follower = org.firstinspires.ftc.teamcode.pedroPathing.Constants.createFollower(opMode.hardwareMap);
         this.frontLeftMotor = getDriveMotor(opMode, Constants.Motors.FrontLeftWheelMotor, DcMotorSimple.Direction.REVERSE);
         this.frontRightMotor = getDriveMotor(opMode, Constants.Motors.FrontRightWheelMotor, DcMotorSimple.Direction.FORWARD);
         this.backLeftMotor = getDriveMotor(opMode, Constants.Motors.BackLeftWheelMotor, DcMotorSimple.Direction.REVERSE);
@@ -55,6 +59,10 @@ public class RampageRobot implements Sequence {
         this.shotDistanceRedLed = opMode.hardwareMap.get(LED.class, Constants.LEDs.BackRightRed);
 
         this.webcam = new AprilTagWebcam(opMode.hardwareMap.get(WebcamName.class, Constants.Cameras.Webcam));
+    }
+
+    public Follower getFollower() {
+        return follower;
     }
 
     public void setDriveMotorPower(double frontLeft, double frontRight, double backLeft, double backRight) {
@@ -165,12 +173,16 @@ public class RampageRobot implements Sequence {
     }
     public void initializeFrame() {
         webcam.update();
+        follower.update();
     }
 
     @Override
-    public boolean hasCompleted() {
+    public boolean hasCompleted(Context context) {
         return false;
     }
+
+    @Override
+    public void start(Context context) { }
 
     @Override
     public void executeFrame(Context context) {

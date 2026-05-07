@@ -1,15 +1,14 @@
 package org.firstinspires.ftc.teamcode;
 
 import org.firstinspires.ftc.teamcode.geometry.TargetLocator;
-import org.firstinspires.ftc.teamcode.pid.AprilTagAimingController;
 import org.firstinspires.ftc.teamcode.robot.Context;
 import org.firstinspires.ftc.teamcode.robot.DriveMotorPower;
-import org.firstinspires.ftc.teamcode.robot.FeederSequence;
+import org.firstinspires.ftc.teamcode.robot.sequencing.FeederSequence;
 import org.firstinspires.ftc.teamcode.robot.GlobalState;
-import org.firstinspires.ftc.teamcode.robot.LEDSequence;
+import org.firstinspires.ftc.teamcode.robot.sequencing.LEDSequence;
 import org.firstinspires.ftc.teamcode.robot.LEDState;
 import org.firstinspires.ftc.teamcode.robot.RampageRobot;
-import org.firstinspires.ftc.teamcode.robot.ShootSequence;
+import org.firstinspires.ftc.teamcode.robot.sequencing.ShootSequence;
 import org.firstinspires.ftc.teamcode.robot.motors.FlywheelVelocitySettings;
 import org.firstinspires.ftc.teamcode.telemetry.TelemetryWriter;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
@@ -33,7 +32,7 @@ public class TeleOp extends RampageOpMode {
     }
 
     @Override
-    protected void processInput(Context context) {
+    protected void executingFrame(Context context) {
         RampageRobot robot = context.getRobot();
 
         Double turnOverride = updateAutoAimingDetails(context);

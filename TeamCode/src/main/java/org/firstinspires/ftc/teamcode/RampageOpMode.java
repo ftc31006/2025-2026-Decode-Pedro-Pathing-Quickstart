@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.robot.Context;
 import org.firstinspires.ftc.teamcode.robot.RampageRobot;
-import org.firstinspires.ftc.teamcode.robot.Sequence;
+import org.firstinspires.ftc.teamcode.robot.sequencing.Sequence;
 import org.firstinspires.ftc.teamcode.telemetry.TelemetryWriter;
 import org.firstinspires.ftc.teamcode.telemetry.TelemetryWriterImpl;
 
@@ -27,6 +27,7 @@ public abstract class RampageOpMode extends LinearOpMode {
             @Override
             public void registerSequence(Sequence sequence) {
                 sequences.add(sequence);
+                sequence.start(this);
             }
 
             @Override
@@ -36,7 +37,7 @@ public abstract class RampageOpMode extends LinearOpMode {
 
             @Override
             public void executeFrame() {
-                sequences.removeIf(Sequence::hasCompleted);
+                sequences.removeIf(s -> s.hasCompleted(this));
 
                 for (Sequence sequence: sequences) {
                     sequence.executeFrame(this);
@@ -53,10 +54,10 @@ public abstract class RampageOpMode extends LinearOpMode {
     protected void executeOpMode(Context context) {
         onStart(context);
 
-        while (opModeIsActive()) {
+        while (opModeIsActive() && !hasFinished(context)) {
             context.getRobot().initializeFrame();
 
-            processInput(context);
+            executingFrame(context);
 
             context.executeFrame();
 
@@ -66,7 +67,11 @@ public abstract class RampageOpMode extends LinearOpMode {
 
     protected void onStart(Context context) { }
 
-    protected void processInput(Context context) { }
+    protected void executingFrame(Context context) { }
+
+    protected boolean hasFinished(Context context) {
+        return false;
+    }
 
     protected void writeTelemetry(Context context, TelemetryWriter writer) { }
 

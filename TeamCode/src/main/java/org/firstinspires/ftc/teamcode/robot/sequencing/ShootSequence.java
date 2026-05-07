@@ -1,12 +1,7 @@
-package org.firstinspires.ftc.teamcode.robot;
+package org.firstinspires.ftc.teamcode.robot.sequencing;
 
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.DigitalChannel;
-
-import org.firstinspires.ftc.teamcode.robot.motors.FlywheelMotorController;
+import org.firstinspires.ftc.teamcode.robot.Context;
+import org.firstinspires.ftc.teamcode.robot.RampageRobot;
 
 public class ShootSequence implements FeederSequence {
     private int count;
@@ -22,13 +17,16 @@ public class ShootSequence implements FeederSequence {
     }
 
     @Override
-    public boolean hasCompleted() {
+    public boolean hasCompleted(Context context) {
         return count <= 0;
     }
 
     @Override
+    public void start(Context context) { }
+
+    @Override
     public void executeFrame(Context context) {
-        if (hasCompleted()) {
+        if (hasCompleted(context)) {
             return;
         }
 
@@ -48,7 +46,7 @@ public class ShootSequence implements FeederSequence {
         switch (robot.getFeederState()) {
             case OPEN:
                 count--;
-                if (!hasCompleted()) {
+                if (!hasCompleted(context)) {
                     robot.closeFeeder();
                 }
                 break;

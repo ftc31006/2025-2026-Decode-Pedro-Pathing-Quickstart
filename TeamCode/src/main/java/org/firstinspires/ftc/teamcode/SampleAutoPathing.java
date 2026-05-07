@@ -2,47 +2,36 @@ package org.firstinspires.ftc.teamcode;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.pedroPathing.Paths;
-import org.firstinspires.ftc.teamcode.pedroPathing.actions.Action;
-import org.firstinspires.ftc.teamcode.pedroPathing.actions.ActionSequence;
-import org.firstinspires.ftc.teamcode.pedroPathing.actions.PathChainAction;
-import org.firstinspires.ftc.teamcode.pedroPathing.actions.SequenceAction;
 import org.firstinspires.ftc.teamcode.robot.Context;
-import org.firstinspires.ftc.teamcode.robot.RampageRobot;
-import org.firstinspires.ftc.teamcode.robot.ShootSequence;
-import org.firstinspires.ftc.teamcode.robot.motors.FlywheelVelocitySettings;
+import org.firstinspires.ftc.teamcode.robot.sequencing.CompositeSequence;
+import org.firstinspires.ftc.teamcode.robot.sequencing.PathChainSequence;
+import org.firstinspires.ftc.teamcode.robot.sequencing.PauseSequence;
+import org.firstinspires.ftc.teamcode.robot.sequencing.Sequence;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Autonomous
-public class SampleAutoPathing extends RampageOpMode {
+public class SampleAutoPathing extends RampageSequenceOpMode {
     @Override
-    protected void executeOpMode(Context context) {
-        Follower follower = Constants.createFollower(hardwareMap);
+    protected Sequence getSequence(Context context) {
+        Follower follower = context.getRobot().getFollower();
         Paths paths = new Paths(follower);
         follower.setPose(new Pose(47.446, 8.066, Math.toRadians(88)));
 
-        List<Action> actions = new ArrayList<>();
-        actions.add(new PathChainAction(follower, paths.Path1));
-//        actions.add(new PauseAction(1000));
-//        actions.add(new PathChainAction(follower, paths.Path2));
-//       actions.add(new PauseAction(1000));
-//       actions.add(new PathChainAction(follower, paths.Path3));
-//        actions.add(new PauseAction(3000));
-//        actions.add(new PathChainAction(follower, paths.Path4));
+        List<Sequence> sequences = new ArrayList<>();
+        sequences.add(new PathChainSequence(follower, paths.Path1));
+//        sequences.add(new PauseSequence(1000));
+//        sequences.add(new PathChainSequence(follower, paths.Path2));
+//        sequences.add(new PauseSequence(1000));
+//        sequences.add(new PathChainSequence(follower, paths.Path3));
+//        sequences.add(new PauseSequence(3000));
+//        sequences.add(new PathChainSequence(follower, paths.Path4));
 
-        ActionSequence sequence = new ActionSequence(actions);
-
-        while (opModeIsActive() && !sequence.hasCompleted()) {
-            follower.update();
-            sequence.update();
-        }
-
-        telemetry.update();
+        return new CompositeSequence(sequences);
     }
 }

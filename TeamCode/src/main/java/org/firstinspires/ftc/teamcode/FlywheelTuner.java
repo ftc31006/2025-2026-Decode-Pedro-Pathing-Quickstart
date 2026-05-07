@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -9,12 +7,7 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
 import org.firstinspires.ftc.teamcode.robot.Constants;
 import org.firstinspires.ftc.teamcode.robot.Context;
-import org.firstinspires.ftc.teamcode.robot.RampageRobot;
-import org.firstinspires.ftc.teamcode.robot.Sequence;
-import org.firstinspires.ftc.teamcode.robot.ShootSequence;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.firstinspires.ftc.teamcode.robot.sequencing.ShootSequence;
 
 //@TeleOp(name = "Flywheel Tuner")
 public class FlywheelTuner extends RampageOpMode {
@@ -50,7 +43,7 @@ public class FlywheelTuner extends RampageOpMode {
     }
 
     @Override
-    protected void processInput(Context context) {
+    protected void executingFrame(Context context) {
         if (gamepad1.yWasPressed()) {
             if (curTargetVelocity == highVelocity) {
                 curTargetVelocity = lowVelocity;

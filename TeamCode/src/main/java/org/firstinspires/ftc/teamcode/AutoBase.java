@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import org.firstinspires.ftc.teamcode.robot.Context;
 import org.firstinspires.ftc.teamcode.robot.RampageRobot;
-import org.firstinspires.ftc.teamcode.robot.ShootSequence;
+import org.firstinspires.ftc.teamcode.robot.sequencing.ShootSequence;
 import org.firstinspires.ftc.teamcode.robot.motors.FlywheelVelocitySettings;
 
 
@@ -24,7 +24,7 @@ public abstract class AutoBase extends RampageOpMode {
         ShootSequence feederSequence = new ShootSequence(3);
         context.registerSequence(feederSequence);
 
-        while (opModeIsActive() && !feederSequence.hasCompleted()) {
+        while (opModeIsActive() && !feederSequence.hasCompleted(context)) {
             context.executeFrame();
         }
 
