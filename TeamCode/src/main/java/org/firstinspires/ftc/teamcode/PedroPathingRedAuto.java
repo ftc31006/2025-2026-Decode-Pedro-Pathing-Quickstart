@@ -9,6 +9,7 @@ import org.firstinspires.ftc.teamcode.robot.Context;
 import org.firstinspires.ftc.teamcode.robot.RampageRobot;
 import org.firstinspires.ftc.teamcode.robot.sequencing.CompositeSequence;
 import org.firstinspires.ftc.teamcode.robot.sequencing.PathChainSequence;
+import org.firstinspires.ftc.teamcode.robot.sequencing.PauseSequence;
 import org.firstinspires.ftc.teamcode.robot.sequencing.Sequence;
 import org.firstinspires.ftc.teamcode.robot.sequencing.ShootSequence;
 import org.firstinspires.ftc.teamcode.robot.motors.FlywheelVelocitySettings;
@@ -21,7 +22,7 @@ public class PedroPathingRedAuto extends RampageSequenceOpMode {
         robot.setFlywheelVelocity(FlywheelVelocitySettings.Auto);
 
         Follower follower = robot.getFollower();
-        follower.setPose(new Pose(47.446, 8.066, Math.toRadians(88)));
+        follower.setPose(  new Pose(80.435, 7.763, Math.toRadians(90)));
     }
 
     @Override
@@ -32,8 +33,10 @@ public class PedroPathingRedAuto extends RampageSequenceOpMode {
 
         return new CompositeSequence(
             new PathChainSequence(follower, paths.Path1),
-            new ShootSequence(3),
-            new PathChainSequence(follower, paths.Path1)
+            new PauseSequence(5000)//,
+//            new ShootSequence(3),
+//            new PathChainSequence(follower, paths.Path2),
+//            new PauseSequence(1000)
         );
     }
 }
