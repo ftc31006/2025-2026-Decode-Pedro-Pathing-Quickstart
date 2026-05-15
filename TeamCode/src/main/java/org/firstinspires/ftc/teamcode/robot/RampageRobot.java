@@ -1,11 +1,13 @@
 package org.firstinspires.ftc.teamcode.robot;
 
 import com.pedropathing.follower.Follower;
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
+import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.LED;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -34,6 +36,7 @@ public class RampageRobot implements Sequence {
     private final Iterable<LED> aprilTagRedLeds;
     private final LED shotDistanceGreenLed;
     private final LED shotDistanceRedLed;
+    private final IMU imu;
 
     private final AprilTagWebcam webcam;
 
@@ -57,6 +60,12 @@ public class RampageRobot implements Sequence {
 
         this.shotDistanceGreenLed = opMode.hardwareMap.get(LED.class, Constants.LEDs.BackRightGreen);
         this.shotDistanceRedLed = opMode.hardwareMap.get(LED.class, Constants.LEDs.BackRightRed);
+
+        imu = opMode.hardwareMap.get(IMU.class, "imu");
+        RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.FORWARD;
+        RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.LEFT;
+        IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(logoDirection, usbDirection));
+        imu.initialize(parameters);
 
         this.webcam = new AprilTagWebcam(opMode.hardwareMap.get(WebcamName.class, Constants.Cameras.Webcam));
     }
@@ -109,6 +118,10 @@ public class RampageRobot implements Sequence {
 
     public void initialize(Context context) {
         context.registerSequence(this);
+    }
+
+    public IMU getImu() {
+        return imu;
     }
 
     public AprilTagDetection getClosestTagById(int... ids) {

@@ -33,10 +33,10 @@ public class PedroPathingRedAuto extends RampageSequenceOpMode {
 
         return new CompositeSequence(
             new PathChainSequence(follower, paths.Path1),
-            new PauseSequence(5000)//,
-//            new ShootSequence(3),
-//            new PathChainSequence(follower, paths.Path2),
-//            new PauseSequence(1000)
+            new PauseSequence(2000),
+            new ShootSequence(3),
+            new PathChainSequence(follower, paths.Path2),
+            new PauseSequence(1000)
         );
     }
 }

@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.hardware.IMU;
+
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.geometry.TargetLocator;
 import org.firstinspires.ftc.teamcode.robot.Context;
 import org.firstinspires.ftc.teamcode.robot.DriveMotorPower;
@@ -126,6 +129,7 @@ public class TeleOp extends RampageOpMode {
 
     private void updateDriveMotorPower(Context context, Double turnOverride) {
         RampageRobot robot = context.getRobot();
+        IMU imu = robot.getImu();
 
         double slowmo = gamepad1.right_bumper ? .35 : 1;
 
@@ -135,15 +139,19 @@ public class TeleOp extends RampageOpMode {
 
         double turn = turnOverride == null ? gamepad1.right_stick_x * slowmo : turnOverride;
 
-        double frontLeft = forwardBack + strafe + turn;
+        double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+        double rotX = strafe * Math.cos(-botHeading) - forwardBack * Math.sin(-botHeading);
+        double rotY = strafe * Math.sin(-botHeading) + forwardBack * Math.cos(-botHeading);
+        double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(turn), 1.0);
 
-        double frontRight = forwardBack - strafe - turn;
+        double frontLeftPower = (rotY + rotX + turn) / denominator;
+        double backLeftPower = (rotY - rotX + turn) / denominator;
+        double frontRightPower = (rotY - rotX - turn) / denominator;
+        double backRightPower = (rotY + rotX - turn) / denominator;
 
-        double backLeft = forwardBack - strafe + turn;
 
-        double backRight = forwardBack + strafe - turn;
 
-        robot.setDriveMotorPower(frontLeft, frontRight, backLeft, backRight);
+        robot.setDriveMotorPower(frontLeftPower, frontRightPower, backLeftPower, backRightPower);
     }
 
     private void initiateShootSequence(Context context, int count) {

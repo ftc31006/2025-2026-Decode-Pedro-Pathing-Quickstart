@@ -23,6 +23,7 @@ public class Constants {
     public static class Sensors {
         public static final String ClosedLimitSwitch = "ClosedLimitSwitch"; // Expansion Hub Digital Port 1/2
         public static final String OpenLimitSwitch = "OpenLimitSwitch"; // Control Hub Digital Port 1/2
+        public static final String IMU = "imu";
     }
 
     public static class LEDs {
