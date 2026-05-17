@@ -1,15 +1,31 @@
 package org.firstinspires.ftc.teamcode.robot;
 
 public class DriveMotorPower {
-    public final double frontLeft;
-    public final double frontRight;
-    public final double backLeft;
-    public final double backRight;
+    private final double frontLeftPower;
+    private final double backLeftPower;
+    private final double frontRightPower;
+    private final double backRightPower;
 
-    public DriveMotorPower(double frontLeft, double frontRight, double backLeft, double backRight) {
-        this.frontLeft = frontLeft;
-        this.frontRight = frontRight;
-        this.backLeft = backLeft;
-        this.backRight = backRight;
+    public DriveMotorPower(double frontLeftPower, double backLeftPower, double frontRightPower, double backRightPower) {
+        this.frontLeftPower = frontLeftPower;
+        this.backLeftPower = backLeftPower;
+        this.frontRightPower = frontRightPower;
+        this.backRightPower = backRightPower;
+    }
+
+    public double getFrontLeftPower() {
+        return frontLeftPower;
+    }
+
+    public double getBackLeftPower() {
+        return backLeftPower;
+    }
+
+    public double getFrontRightPower() {
+        return frontRightPower;
+    }
+
+    public double getBackRightPower() {
+        return backRightPower;
     }
 }

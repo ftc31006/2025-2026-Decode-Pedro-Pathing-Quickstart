@@ -3,6 +3,10 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.teamcode.driveControl.DriveController;
+import org.firstinspires.ftc.teamcode.driveControl.DriveControllerContext;
+import org.firstinspires.ftc.teamcode.driveControl.FieldCentricDriveController;
+import org.firstinspires.ftc.teamcode.driveControl.RobotCentricDriveController;
 import org.firstinspires.ftc.teamcode.geometry.TargetLocator;
 import org.firstinspires.ftc.teamcode.robot.Context;
 import org.firstinspires.ftc.teamcode.robot.DriveMotorPower;
@@ -16,6 +20,8 @@ import org.firstinspires.ftc.teamcode.robot.motors.FlywheelVelocitySettings;
 import org.firstinspires.ftc.teamcode.telemetry.TelemetryWriter;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
+import java.util.List;
+
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "TeleOp")
 public class TeleOp extends RampageOpMode {
     private final TargetLocator targetLocator = new TargetLocator(22);
@@ -23,6 +29,8 @@ public class TeleOp extends RampageOpMode {
     private FeederSequence feederSequence = null;
     private String distance;
     private final double autoAimTurnSpeed = .2;
+    private final List<DriveController> allDriveControllers = List.of(new FieldCentricDriveController(), new RobotCentricDriveController());
+    private DriveController driveController = allDriveControllers.get(0);
 
     @Override
     protected void onStart(Context context) {
@@ -37,6 +45,10 @@ public class TeleOp extends RampageOpMode {
     @Override
     protected void executingFrame(Context context) {
         RampageRobot robot = context.getRobot();
+
+        if (gamepad1.xWasPressed()) {
+            nextDriveController();
+        }
 
         Double turnOverride = updateAutoAimingDetails(context);
         updateDriveMotorPower(context, turnOverride);
@@ -76,10 +88,10 @@ public class TeleOp extends RampageOpMode {
         writer.write("Sequence Count", context.getSequenceCount());
 
         DriveMotorPower driveMotorPower = robot.getDriveMotorPower();
-        writer.write("Front Left Wheel Power", driveMotorPower.frontLeft);
-        writer.write("Front Right Wheel Power", driveMotorPower.frontRight);
-        writer.write("Back Left Wheel Power", driveMotorPower.backLeft);
-        writer.write("Back Right Wheel Power", driveMotorPower.backRight);
+        writer.write("Front Left Wheel Power", driveMotorPower.getFrontLeftPower());
+        writer.write("Front Right Wheel Power", driveMotorPower.getFrontRightPower());
+        writer.write("Back Left Wheel Power", driveMotorPower.getBackLeftPower());
+        writer.write("Back Right Wheel Power", driveMotorPower.getBackRightPower());
 
         writer.write("Distance", distance);
 
@@ -133,23 +145,19 @@ public class TeleOp extends RampageOpMode {
 
         double slowmo = gamepad1.right_bumper ? .35 : 1;
 
-        double forwardBack = -gamepad1.left_stick_y * slowmo;
+        DriveControllerContext driveControllerContext = new DriveControllerContext(
+                -gamepad1.left_stick_y,
+                gamepad1.left_stick_x,
+                turnOverride == null ? gamepad1.right_stick_x * slowmo : turnOverride,
+                imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS)
+        );
 
-        double strafe = gamepad1.left_stick_x * slowmo;
+        DriveMotorPower driveMotorPower = driveController.calculateDriveMotorPower(driveControllerContext);
 
-        double turn = turnOverride == null ? gamepad1.right_stick_x * slowmo : turnOverride;
-
-        double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
-        double rotX = strafe * Math.cos(-botHeading) - forwardBack * Math.sin(-botHeading);
-        double rotY = strafe * Math.sin(-botHeading) + forwardBack * Math.cos(-botHeading);
-        double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(turn), 1.0);
-
-        double frontLeftPower = (rotY + rotX + turn) / denominator;
-        double backLeftPower = (rotY - rotX + turn) / denominator;
-        double frontRightPower = (rotY - rotX - turn) / denominator;
-        double backRightPower = (rotY + rotX - turn) / denominator;
-
-
+        double frontLeftPower = driveMotorPower.getFrontLeftPower() * slowmo;
+        double backLeftPower = driveMotorPower.getBackLeftPower() * slowmo;
+        double frontRightPower = driveMotorPower.getFrontRightPower() * slowmo;
+        double backRightPower = driveMotorPower.getBackRightPower() * slowmo;
 
         robot.setDriveMotorPower(frontLeftPower, frontRightPower, backLeftPower, backRightPower);
     }
@@ -167,5 +175,10 @@ public class TeleOp extends RampageOpMode {
 
         feederSequence.cancel();
         feederSequence = null;
+    }
+
+    private void nextDriveController() {
+        int currentIndex = allDriveControllers.indexOf(driveController);
+        driveController = allDriveControllers.get((currentIndex + 1) % allDriveControllers.size());
     }
 }
