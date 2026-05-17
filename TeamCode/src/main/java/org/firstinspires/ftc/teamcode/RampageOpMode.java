@@ -186,8 +186,8 @@ public abstract class RampageOpMode extends LinearOpMode {
             transformAndDrawLines(pose, style, cornerPoints);
 
             CartesianPoint[] headingPoints = new CartesianPoint[] {
-                    // Origin
-                    new CartesianPoint(0, 0),
+                    // Halfway between origin and Front Center
+                    new CartesianPoint(0, ROBOT_LENGTH / 4),
                     // Front Center
                     new CartesianPoint(0, ROBOT_LENGTH / 2)
             };
