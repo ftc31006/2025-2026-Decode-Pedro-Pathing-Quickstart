@@ -290,9 +290,9 @@ public abstract class RampageOpMode extends LinearOpMode {
             double deltaY = pose.getY();
 
             PolarPoint pp = point.toPolar();
-            pp.move(0, deltaTheta);
+            PolarPoint transformedPoint = pp.move(0, deltaTheta - Math.toRadians(90));
 
-            return pp.toCartesian().move(deltaX, deltaY);
+            return transformedPoint.toCartesian().move(deltaX, deltaY);
         }
     }
 }
