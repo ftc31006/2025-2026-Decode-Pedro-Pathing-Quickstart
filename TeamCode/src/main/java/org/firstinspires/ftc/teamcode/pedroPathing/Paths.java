@@ -34,7 +34,7 @@ public class Paths {
                                 new Pose(126.937, 70.043)
                         )
                 ).setLinearHeadingInterpolation(Math.toRadians(39), Math.toRadians(0))
-
+                .addParametricCallback(0.5, () -> follower.setMaxPower(.5))
                 .build();
     }
 }

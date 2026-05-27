@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.pedroPathing.Paths;
 import org.firstinspires.ftc.teamcode.robot.Context;
+import org.firstinspires.ftc.teamcode.robot.DriveMotorPower;
 import org.firstinspires.ftc.teamcode.robot.RampageRobot;
 import org.firstinspires.ftc.teamcode.robot.sequencing.CompositeSequence;
 import org.firstinspires.ftc.teamcode.robot.sequencing.PathChainSequence;
@@ -35,7 +36,7 @@ public class PedroPathingRedAuto extends RampageSequenceOpMode {
             new PathChainSequence(follower, paths.Path1),
             new PauseSequence(2000),
             new ShootSequence(3),
-            new PathChainSequence(follower, paths.Path2),
+            new PathChainSequence(follower, paths.Path2, 0.5),
             new PauseSequence(1000)
         );
     }
