@@ -1,5 +1,11 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.pedropathing.follower.Follower;
+import com.pedropathing.geometry.BezierLine;
+import com.pedropathing.geometry.Pose;
+import com.pedropathing.paths.HeadingInterpolator;
+import com.pedropathing.paths.Path;
+import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -24,17 +30,21 @@ import java.util.List;
 
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "TeleOp")
 public class TeleOp extends RampageOpMode {
+    private final Pose startingPose = new Pose(45, 98, Math.toRadians(90)); //See ExampleAuto to understand how to use this
     private final TargetLocator targetLocator = new TargetLocator(22);
     private final LEDSequence ledSequence = new LEDSequence();
     private FeederSequence feederSequence = null;
     private String distance;
     private final double autoAimTurnSpeed = .2;
-    private final List<DriveController> allDriveControllers = List.of(new FieldCentricDriveController(), new RobotCentricDriveController());
-    private DriveController driveController = allDriveControllers.get(0);
+    private boolean automatedDrive;
+    private boolean robotCentric = false;
+//    private final List<DriveController> allDriveControllers = List.of(new FieldCentricDriveController(), new RobotCentricDriveController());
+//    private DriveController driveController = allDriveControllers.get(0);
 
     @Override
     protected void onStart(Context context) {
         RampageRobot robot = context.getRobot();
+        robot.getFollower().setStartingPose(startingPose == null ? new Pose() : startingPose);
 
         context.registerSequence(ledSequence);
         robot.setFlywheelVelocity(FlywheelVelocitySettings.Default);
@@ -45,17 +55,32 @@ public class TeleOp extends RampageOpMode {
     @Override
     protected void executingFrame(Context context) {
         RampageRobot robot = context.getRobot();
+        Follower follower = robot.getFollower();
 
         if (gamepad1.xWasPressed()) {
-            nextDriveController();
+//            nextDriveController();
+            robotCentric = !robotCentric;
         }
 
-        Double turnOverride = updateAutoAimingDetails(context);
-        updateDriveMotorPower(context, turnOverride);
+        if (!automatedDrive) {
+            Double turnOverride = updateAutoAimingDetails(context);
+            updateDriveMotorPower(context, turnOverride);
+        }
+
+        if (gamepad1.aWasPressed()) {
+            PathChain pathChain = buildPath(follower);
+            follower.followPath(pathChain);
+            automatedDrive = true;
+        }
+
+        if (automatedDrive && (gamepad1.bWasPressed() || !follower.isBusy())) {
+            follower.startTeleopDrive();
+            automatedDrive = false;
+        }
 
         if (gamepad2.leftBumperWasPressed() ){
-           robot.setFlywheelVelocity(FlywheelVelocitySettings.Default);
-           robot.setShotDistanceLEDState(LEDState.GREEN);
+            robot.setFlywheelVelocity(FlywheelVelocitySettings.Default);
+            robot.setShotDistanceLEDState(LEDState.GREEN);
             distance = "Near";
         }
 
@@ -141,25 +166,38 @@ public class TeleOp extends RampageOpMode {
 
     private void updateDriveMotorPower(Context context, Double turnOverride) {
         RampageRobot robot = context.getRobot();
-        IMU imu = robot.getImu();
+//        IMU imu = robot.getImu();
 
-        double slowmo = gamepad1.right_bumper ? .35 : 1;
-
-        DriveControllerContext driveControllerContext = new DriveControllerContext(
+        double powerMultiplier = gamepad1.right_bumper ? .35 : 1;
+        robot.getFollower().setTeleOpDrive(
                 -gamepad1.left_stick_y,
-                gamepad1.left_stick_x,
-                turnOverride == null ? gamepad1.right_stick_x * slowmo : turnOverride,
-                imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS)
+                -gamepad1.left_stick_x,
+                -gamepad1.right_stick_x,
+                robotCentric
         );
 
-        DriveMotorPower driveMotorPower = driveController.calculateDriveMotorPower(driveControllerContext);
+//        DriveControllerContext driveControllerContext = new DriveControllerContext(
+//                -gamepad1.left_stick_y,
+//                gamepad1.left_stick_x,
+//                turnOverride == null ? gamepad1.right_stick_x * slowmo : turnOverride,
+//                imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS)
+//        );
 
-        double frontLeftPower = driveMotorPower.getFrontLeftPower() * slowmo;
-        double backLeftPower = driveMotorPower.getBackLeftPower() * slowmo;
-        double frontRightPower = driveMotorPower.getFrontRightPower() * slowmo;
-        double backRightPower = driveMotorPower.getBackRightPower() * slowmo;
+//        DriveMotorPower driveMotorPower = driveController.calculateDriveMotorPower(driveControllerContext);
 
-        robot.setDriveMotorPower(frontLeftPower, frontRightPower, backLeftPower, backRightPower);
+//        double frontLeftPower = driveMotorPower.getFrontLeftPower() * slowmo;
+//        double backLeftPower = driveMotorPower.getBackLeftPower() * slowmo;
+//        double frontRightPower = driveMotorPower.getFrontRightPower() * slowmo;
+//        double backRightPower = driveMotorPower.getBackRightPower() * slowmo;
+//
+//        robot.setDriveMotorPower(frontLeftPower, frontRightPower, backLeftPower, backRightPower);
+    }
+
+    private PathChain buildPath(Follower follower) {
+        return follower.pathBuilder() //Lazy Curve Generation
+                .addPath(new Path(new BezierLine(follower::getPose, new Pose(45, 98))))
+                .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, Math.toRadians(90), 0.8))
+                .build();
     }
 
     private void initiateShootSequence(Context context, int count) {
@@ -177,8 +215,8 @@ public class TeleOp extends RampageOpMode {
         feederSequence = null;
     }
 
-    private void nextDriveController() {
-        int currentIndex = allDriveControllers.indexOf(driveController);
-        driveController = allDriveControllers.get((currentIndex + 1) % allDriveControllers.size());
-    }
+//    private void nextDriveController() {
+//        int currentIndex = allDriveControllers.indexOf(driveController);
+//        driveController = allDriveControllers.get((currentIndex + 1) % allDriveControllers.size());
+//    }
 }
