@@ -38,8 +38,9 @@ public class TeleOp extends RampageOpMode {
     private final double autoAimTurnSpeed = .2;
     private boolean automatedDrive;
     private boolean robotCentric = false;
-//    private final List<DriveController> allDriveControllers = List.of(new FieldCentricDriveController(), new RobotCentricDriveController());
-//    private DriveController driveController = allDriveControllers.get(0);
+    private final List<DriveController> allDriveControllers = List.of(new FieldCentricDriveController(), new RobotCentricDriveController());
+    private DriveController driveController = allDriveControllers.get(0);
+    private int driveControllerIndex = 0;
 
     @Override
     protected void onStart(Context context) {
@@ -57,8 +58,8 @@ public class TeleOp extends RampageOpMode {
         RampageRobot robot = context.getRobot();
         Follower follower = robot.getFollower();
 
-        if (gamepad1.xWasPressed()) {
-//            nextDriveController();
+        if (gamepad1.startWasPressed()) {
+            nextDriveController();
             robotCentric = !robotCentric;
         }
 
@@ -117,6 +118,7 @@ public class TeleOp extends RampageOpMode {
         writer.write("Front Right Wheel Power", driveMotorPower.getFrontRightPower());
         writer.write("Back Left Wheel Power", driveMotorPower.getBackLeftPower());
         writer.write("Back Right Wheel Power", driveMotorPower.getBackRightPower());
+        writer.write("Drive Controller Index", driveControllerIndex);
 
         writer.write("Distance", distance);
 
@@ -166,31 +168,31 @@ public class TeleOp extends RampageOpMode {
 
     private void updateDriveMotorPower(Context context, Double turnOverride) {
         RampageRobot robot = context.getRobot();
-//        IMU imu = robot.getImu();
+        IMU imu = robot.getImu();
 
         double powerMultiplier = gamepad1.right_bumper ? .35 : 1;
-        robot.getFollower().setTeleOpDrive(
-                -gamepad1.left_stick_y,
-                -gamepad1.left_stick_x,
-                -gamepad1.right_stick_x,
-                robotCentric
-        );
-
-//        DriveControllerContext driveControllerContext = new DriveControllerContext(
+//        robot.getFollower().setTeleOpDrive(
 //                -gamepad1.left_stick_y,
-//                gamepad1.left_stick_x,
-//                turnOverride == null ? gamepad1.right_stick_x * slowmo : turnOverride,
-//                imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS)
+//                -gamepad1.left_stick_x,
+//                -gamepad1.right_stick_x,
+//                robotCentric
 //        );
 
-//        DriveMotorPower driveMotorPower = driveController.calculateDriveMotorPower(driveControllerContext);
+        DriveControllerContext driveControllerContext = new DriveControllerContext(
+                -gamepad1.left_stick_y,
+                gamepad1.left_stick_x,
+                turnOverride == null ? gamepad1.right_stick_x * powerMultiplier : turnOverride,
+                imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS)
+        );
 
-//        double frontLeftPower = driveMotorPower.getFrontLeftPower() * slowmo;
-//        double backLeftPower = driveMotorPower.getBackLeftPower() * slowmo;
-//        double frontRightPower = driveMotorPower.getFrontRightPower() * slowmo;
-//        double backRightPower = driveMotorPower.getBackRightPower() * slowmo;
-//
-//        robot.setDriveMotorPower(frontLeftPower, frontRightPower, backLeftPower, backRightPower);
+        DriveMotorPower driveMotorPower = driveController.calculateDriveMotorPower(driveControllerContext);
+
+        double frontLeftPower = driveMotorPower.getFrontLeftPower() * powerMultiplier;
+        double backLeftPower = driveMotorPower.getBackLeftPower() * powerMultiplier;
+        double frontRightPower = driveMotorPower.getFrontRightPower() * powerMultiplier;
+        double backRightPower = driveMotorPower.getBackRightPower() * powerMultiplier;
+
+        robot.setDriveMotorPower(frontLeftPower, frontRightPower, backLeftPower, backRightPower);
     }
 
     private PathChain buildPath(Follower follower) {
@@ -215,8 +217,9 @@ public class TeleOp extends RampageOpMode {
         feederSequence = null;
     }
 
-//    private void nextDriveController() {
-//        int currentIndex = allDriveControllers.indexOf(driveController);
-//        driveController = allDriveControllers.get((currentIndex + 1) % allDriveControllers.size());
-//    }
+    private void nextDriveController() {
+        int currentIndex = allDriveControllers.indexOf(driveController);
+        driveControllerIndex = (currentIndex + 1) % allDriveControllers.size();
+        driveController = allDriveControllers.get(driveControllerIndex);
+    }
 }
