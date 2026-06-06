@@ -6,16 +6,9 @@ import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.HeadingInterpolator;
 import com.pedropathing.paths.Path;
 import com.pedropathing.paths.PathChain;
-import com.qualcomm.robotcore.hardware.IMU;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.teamcode.driveControl.DriveController;
-import org.firstinspires.ftc.teamcode.driveControl.DriveControllerContext;
-import org.firstinspires.ftc.teamcode.driveControl.FieldCentricDriveController;
-import org.firstinspires.ftc.teamcode.driveControl.RobotCentricDriveController;
 import org.firstinspires.ftc.teamcode.geometry.TargetLocator;
 import org.firstinspires.ftc.teamcode.robot.Context;
-import org.firstinspires.ftc.teamcode.robot.DriveMotorPower;
 import org.firstinspires.ftc.teamcode.robot.sequencing.FeederSequence;
 import org.firstinspires.ftc.teamcode.robot.GlobalState;
 import org.firstinspires.ftc.teamcode.robot.sequencing.LEDSequence;
@@ -26,7 +19,7 @@ import org.firstinspires.ftc.teamcode.robot.motors.FlywheelVelocitySettings;
 import org.firstinspires.ftc.teamcode.telemetry.TelemetryWriter;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
-import java.util.List;
+import java.util.Locale;
 
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "TeleOp")
 public class TeleOp extends RampageOpMode {
@@ -36,16 +29,18 @@ public class TeleOp extends RampageOpMode {
     private FeederSequence feederSequence = null;
     private String distance;
     private final double autoAimTurnSpeed = .2;
-    private boolean automatedDrive;
+    private boolean automatedDrive = false;
     private boolean robotCentric = false;
-    private final List<DriveController> allDriveControllers = List.of(new FieldCentricDriveController(), new RobotCentricDriveController());
-    private DriveController driveController = allDriveControllers.get(0);
-    private int driveControllerIndex = 0;
+
+    @Override
+    protected void init(Context context) {
+        RampageRobot robot = context.getRobot();
+        robot.getFollower().setStartingPose(startingPose == null ? new Pose() : startingPose);
+    }
 
     @Override
     protected void onStart(Context context) {
         RampageRobot robot = context.getRobot();
-        robot.getFollower().setStartingPose(startingPose == null ? new Pose() : startingPose);
 
         context.registerSequence(ledSequence);
         robot.setFlywheelVelocity(FlywheelVelocitySettings.Default);
@@ -59,7 +54,6 @@ public class TeleOp extends RampageOpMode {
         Follower follower = robot.getFollower();
 
         if (gamepad1.startWasPressed()) {
-            nextDriveController();
             robotCentric = !robotCentric;
         }
 
@@ -113,25 +107,18 @@ public class TeleOp extends RampageOpMode {
         writer.write("Feeder Current Position", robot.getFeederPosition());
         writer.write("Sequence Count", context.getSequenceCount());
 
-        DriveMotorPower driveMotorPower = robot.getDriveMotorPower();
-        writer.write("Front Left Wheel Power", driveMotorPower.getFrontLeftPower());
-        writer.write("Front Right Wheel Power", driveMotorPower.getFrontRightPower());
-        writer.write("Back Left Wheel Power", driveMotorPower.getBackLeftPower());
-        writer.write("Back Right Wheel Power", driveMotorPower.getBackRightPower());
-        writer.write("Drive Controller Index", driveControllerIndex);
-
         writer.write("Distance", distance);
 
         AprilTagDetection detection = robot.getClosestTagById(20, 24);
         if (detection != null) {
             if (detection.metadata != null) {
-                telemetry.addLine(String.format("\n==== (ID %d) %s", detection.id, detection.metadata.name));
-                telemetry.addLine(String.format("XYZ %6.1f %6.1f %6.1f  (cm)", detection.ftcPose.x, detection.ftcPose.y, detection.ftcPose.z));
-                telemetry.addLine(String.format("PRY %6.1f %6.1f %6.1f  (deg)", detection.ftcPose.pitch, detection.ftcPose.roll, detection.ftcPose.yaw));
-                telemetry.addLine(String.format("RBE %6.1f %6.1f %6.1f  (cm, deg, deg)", detection.ftcPose.range, detection.ftcPose.bearing, detection.ftcPose.elevation));
+                telemetry.addLine(String.format(Locale.US, "\n==== (ID %d) %s", detection.id, detection.metadata.name));
+                telemetry.addLine(String.format(Locale.US, "XYZ %6.1f %6.1f %6.1f  (cm)", detection.ftcPose.x, detection.ftcPose.y, detection.ftcPose.z));
+                telemetry.addLine(String.format(Locale.US, "PRY %6.1f %6.1f %6.1f  (deg)", detection.ftcPose.pitch, detection.ftcPose.roll, detection.ftcPose.yaw));
+                telemetry.addLine(String.format(Locale.US, "RBE %6.1f %6.1f %6.1f  (cm, deg, deg)", detection.ftcPose.range, detection.ftcPose.bearing, detection.ftcPose.elevation));
             } else {
-                telemetry.addLine(String.format("\n==== (ID %d) Unknown", detection.id));
-                telemetry.addLine(String.format("Center %6.0f %6.0f   (pixels)", detection.center.x, detection.center.y));
+                telemetry.addLine(String.format(Locale.US, "\n==== (ID %d) Unknown", detection.id));
+                telemetry.addLine(String.format(Locale.US, "Center %6.0f %6.0f   (pixels)", detection.center.x, detection.center.y));
             }
         }
     }
@@ -168,31 +155,14 @@ public class TeleOp extends RampageOpMode {
 
     private void updateDriveMotorPower(Context context, Double turnOverride) {
         RampageRobot robot = context.getRobot();
-        IMU imu = robot.getImu();
 
         double powerMultiplier = gamepad1.right_bumper ? .35 : 1;
-//        robot.getFollower().setTeleOpDrive(
-//                -gamepad1.left_stick_y,
-//                -gamepad1.left_stick_x,
-//                -gamepad1.right_stick_x,
-//                robotCentric
-//        );
-
-        DriveControllerContext driveControllerContext = new DriveControllerContext(
-                -gamepad1.left_stick_y,
-                gamepad1.left_stick_x,
-                turnOverride == null ? gamepad1.right_stick_x * powerMultiplier : turnOverride,
-                imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS)
+        robot.getFollower().setTeleOpDrive(
+                -gamepad1.left_stick_y * powerMultiplier,
+                -gamepad1.left_stick_x * powerMultiplier,
+                turnOverride == null ? -gamepad1.right_stick_x * powerMultiplier : turnOverride,
+                robotCentric
         );
-
-        DriveMotorPower driveMotorPower = driveController.calculateDriveMotorPower(driveControllerContext);
-
-        double frontLeftPower = driveMotorPower.getFrontLeftPower() * powerMultiplier;
-        double backLeftPower = driveMotorPower.getBackLeftPower() * powerMultiplier;
-        double frontRightPower = driveMotorPower.getFrontRightPower() * powerMultiplier;
-        double backRightPower = driveMotorPower.getBackRightPower() * powerMultiplier;
-
-        robot.setDriveMotorPower(frontLeftPower, frontRightPower, backLeftPower, backRightPower);
     }
 
     private PathChain buildPath(Follower follower) {
@@ -215,11 +185,5 @@ public class TeleOp extends RampageOpMode {
 
         feederSequence.cancel();
         feederSequence = null;
-    }
-
-    private void nextDriveController() {
-        int currentIndex = allDriveControllers.indexOf(driveController);
-        driveControllerIndex = (currentIndex + 1) % allDriveControllers.size();
-        driveController = allDriveControllers.get(driveControllerIndex);
     }
 }

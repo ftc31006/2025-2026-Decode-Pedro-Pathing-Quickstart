@@ -74,17 +74,6 @@ public class RampageRobot implements Sequence {
         return follower;
     }
 
-    public void setDriveMotorPower(double frontLeft, double frontRight, double backLeft, double backRight) {
-        frontLeftMotor.setPower(frontLeft);
-        frontRightMotor.setPower(frontRight);
-        backLeftMotor.setPower(backLeft);
-        backRightMotor.setPower(backRight);
-    }
-
-    public DriveMotorPower getDriveMotorPower() {
-        return new DriveMotorPower(frontLeftMotor.getPower(), frontRightMotor.getPower(), backLeftMotor.getPower(), backRightMotor.getPower());
-    }
-
     public FeederState getFeederState() {
         if (GlobalState.FeederHomePosition == null) {
             return FeederState.INITIALIZING;
@@ -116,7 +105,7 @@ public class RampageRobot implements Sequence {
         flywheelRight.setTargetVelocity(velocity.targetVelocity, velocity.rightFlywheel);
     }
 
-    public void initialize(Context context) {
+    public void init(Context context) {
         context.registerSequence(this);
     }
 
