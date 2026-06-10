@@ -64,11 +64,6 @@ public class AprilTagTest extends RampageOpMode {
         writer.write("Kp", P);
         writer.write("Turn Speed", turnSpeed);
 
-        DriveMotorPower driveMotorPower = robot.getDriveMotorPower();
-        writer.write("Front Left Wheel Power", driveMotorPower.getFrontLeftPower());
-        writer.write("Front Right Wheel Power", driveMotorPower.getFrontRightPower());
-        writer.write("Back Left Wheel Power", driveMotorPower.getBackLeftPower());
-        writer.write("Back Right Wheel Power", driveMotorPower.getBackRightPower());
         writer.write("");
         writer.write("April Tag LED State", robot.getAprilTagLEDState());
 
@@ -123,7 +118,6 @@ public class AprilTagTest extends RampageOpMode {
 
         double backRight = -turn * slowmo;
 
-        robot.setDriveMotorPower(frontLeft, frontRight, backLeft, backRight);
         ledSequence.setState(aprilTagState, frequency);
     }
 }

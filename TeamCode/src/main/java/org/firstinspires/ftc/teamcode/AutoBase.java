@@ -39,8 +39,8 @@ public abstract class AutoBase extends RampageOpMode {
     protected boolean shouldShoot(){return true;}
 
     private void drive(RampageRobot robot, double frontLeftPower,double frontRightPower,double backLeftPower,double backRightPower,long duration) {
-        robot.setDriveMotorPower(frontLeftPower, frontRightPower, backLeftPower, backRightPower);
-        sleep(duration);
-        robot.setDriveMotorPower(0, 0, 0, 0);
+//        robot.setDriveMotorPower(frontLeftPower, frontRightPower, backLeftPower, backRightPower);
+//        sleep(duration);
+//        robot.setDriveMotorPower(0, 0, 0, 0);
     }
 }

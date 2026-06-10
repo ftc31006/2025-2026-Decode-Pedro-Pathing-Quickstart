@@ -106,6 +106,7 @@ public class TeleOp extends RampageOpMode {
         writer.write("Feeder Home Position", GlobalState.FeederHomePosition);
         writer.write("Feeder Current Position", robot.getFeederPosition());
         writer.write("Sequence Count", context.getSequenceCount());
+        writer.write("Automated Drive", automatedDrive);
 
         writer.write("Distance", distance);
 
