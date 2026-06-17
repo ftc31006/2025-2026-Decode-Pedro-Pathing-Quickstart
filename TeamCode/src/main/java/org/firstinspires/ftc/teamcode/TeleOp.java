@@ -41,6 +41,8 @@ public class TeleOp extends RampageOpMode {
     private final List<DriveController> allDriveControllers = List.of(new FieldCentricDriveController(), new RobotCentricDriveController());
     private DriveController driveController = allDriveControllers.get(0);
     private int driveControllerIndex = 0;
+    private final double TargetX = (135);
+    private final double TargetY = (135);
 
     @Override
     protected void onStart(Context context) {
@@ -107,6 +109,8 @@ public class TeleOp extends RampageOpMode {
     @Override
     protected void writeTelemetry(Context context, TelemetryWriter writer) {
         RampageRobot robot = context.getRobot();
+        Follower follower = robot.getFollower();
+        Pose pose = follower.getPose();
 
         writer.write("Feeder State", robot.getFeederState());
         writer.write("Feeder Home Position", GlobalState.FeederHomePosition);
@@ -121,6 +125,10 @@ public class TeleOp extends RampageOpMode {
         writer.write("Drive Controller Index", driveControllerIndex);
 
         writer.write("Distance", distance);
+        writer.write("Coordinates", follower.getPose());
+        writer.write("Heading", follower.getHeading());
+        writer.write("X", pose.getX());
+        writer.write("Y", pose.getY());
 
         AprilTagDetection detection = robot.getClosestTagById(20, 24);
         if (detection != null) {
@@ -138,28 +146,42 @@ public class TeleOp extends RampageOpMode {
 
     private Double updateAutoAimingDetails(Context context) {
         RampageRobot robot = context.getRobot();
+        Pose pose = robot.getFollower().getPose();
 
         LEDState aprilTagState = LEDState.OFF;
         Double turn = null;
         Integer frequency = null;
-
-        AprilTagDetection detection = robot.getClosestTagById(20, 24);
-        if (detection != null && detection.metadata != null) {
-            double angle = targetLocator.getAngle(detection.ftcPose.x, detection.ftcPose.y, detection.ftcPose.yaw);
-
-            aprilTagState = LEDState.RED;
-
-            if (Math.abs(angle) < 3) {
-                aprilTagState = LEDState.GREEN;
-                if (gamepad1.x) {
-                    frequency = 100;
-                    turn = 0.0;
-                }
-            } else if (gamepad1.x) {
-                turn = angle < 0 ? -autoAimTurnSpeed : autoAimTurnSpeed;
-                frequency = 100;
-            }
+        double a =  (TargetX-pose.getX());
+        double b = (TargetY-pose.getY());
+        double targetAngle = Math.atan(b/a);
+        double angleDifference = pose.getHeading()-targetAngle;
+        if(Math.abs(angleDifference)<3){
+            return 0.0;
         }
+
+        if(angleDifference < 0) {
+            turn = -autoAimTurnSpeed;
+        } else {
+            turn = autoAimTurnSpeed;
+        }
+
+//        AprilTagDetection detection = robot.getClosestTagById(20, 24);
+//        if (detection != null && detection.metadata != null) {
+//            double angle = targetLocator.getAngle(detection.ftcPose.x, detection.ftcPose.y, detection.ftcPose.yaw);
+//
+//            aprilTagState = LEDState.RED;
+//
+//            if (Math.abs(angle) < 3) {
+//                aprilTagState = LEDState.GREEN;
+//                if (gamepad1.x) {
+//                    frequency = 100;
+//                    turn = 0.0;
+//                }
+//            } else if (gamepad1.x) {
+//                turn = angle < 0 ? -autoAimTurnSpeed : autoAimTurnSpeed;
+//                frequency = 100;
+//            }
+//        }
 
         ledSequence.setState(aprilTagState, frequency);
 
