@@ -30,7 +30,7 @@ import java.util.List;
 
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "TeleOp")
 public class TeleOp extends RampageOpMode {
-    private final Pose startingPose = new Pose(45, 98, Math.toRadians(90)); //See ExampleAuto to understand how to use this
+    private final Pose startingPose = new Pose(85, 8.5, Math.toRadians(90)); //See ExampleAuto to understand how to use this
     private final TargetLocator targetLocator = new TargetLocator(22);
     private final LEDSequence ledSequence = new LEDSequence();
     private FeederSequence feederSequence = null;
@@ -129,7 +129,10 @@ public class TeleOp extends RampageOpMode {
         writer.write("Heading", follower.getHeading());
         writer.write("X", pose.getX());
         writer.write("Y", pose.getY());
-
+        writer.write("a", a);
+        writer.write("isAutoAimingWorking",isAutoAimingWorking);
+        writer.write("b", b);
+        writer.write("targetAngle", TA);
         AprilTagDetection detection = robot.getClosestTagById(20, 24);
         if (detection != null) {
             if (detection.metadata != null) {
@@ -144,17 +147,30 @@ public class TeleOp extends RampageOpMode {
         }
     }
 
+    private String isAutoAimingWorking;
+    private String TA;
+    private String a;
+    private String b;
+
     private Double updateAutoAimingDetails(Context context) {
+        if (!gamepad1.x){
+            isAutoAimingWorking = "false";
+            return null;
+        }
+
         RampageRobot robot = context.getRobot();
         Pose pose = robot.getFollower().getPose();
-
         LEDState aprilTagState = LEDState.OFF;
         Double turn = null;
         Integer frequency = null;
         double a =  (TargetX-pose.getX());
+        this.a = Double.toString(a);
         double b = (TargetY-pose.getY());
-        double targetAngle = Math.atan(b/a);
+        this.b = Double.toString(b);
+        double targetAngle = Math.toDegrees(Math.atan(b/a));
+        TA = Double.toString(targetAngle);
         double angleDifference = pose.getHeading()-targetAngle;
+        isAutoAimingWorking = Double.toString(angleDifference);
         if(Math.abs(angleDifference)<3){
             return 0.0;
         }
