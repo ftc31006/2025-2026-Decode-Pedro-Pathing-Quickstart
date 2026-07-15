@@ -112,8 +112,8 @@ public class RampageRobot implements Sequence {
     }
 
     public void setFlywheelVelocity(FlywheelVelocitySettings velocity) {
-        flywheelLeft.setTargetVelocity(velocity.targetVelocity, velocity.leftFlywheel);
-        flywheelRight.setTargetVelocity(velocity.targetVelocity, velocity.rightFlywheel);
+//        flywheelLeft.setTargetVelocity(velocity.targetVelocity, velocity.leftFlywheel);
+//        flywheelRight.setTargetVelocity(velocity.targetVelocity, velocity.rightFlywheel);
     }
 
     public void initialize(Context context) {
