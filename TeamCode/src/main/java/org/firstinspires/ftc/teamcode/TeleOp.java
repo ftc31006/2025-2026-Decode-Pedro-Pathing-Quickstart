@@ -50,7 +50,7 @@ public class TeleOp extends RampageOpMode {
     @Override
     protected void onStart(Context context) {
         RampageRobot robot = context.getRobot();
-        robot.getFollower().setStartingPose(startingPose == null ? new Pose() : startingPose);
+        robot.getFollower().setStartingPose(startingPose);
 
         context.registerSequence(ledSequence);
         robot.setFlywheelVelocity(FlywheelVelocitySettings.Default);
@@ -163,6 +163,7 @@ public class TeleOp extends RampageOpMode {
     private Double updateAutoAimingDetails(Context context) {
         if (!gamepad1.x){
             isAutoAimingWorking = "false";
+            ledSequence.setState(LEDState.OFF, null);
             return null;
         }
 
